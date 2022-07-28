@@ -477,14 +477,19 @@ class KittiDataset_CMKD(DatasetTemplate_CMKD):
                 ...
         """
         if self.training:
-            assert 'gt_boxes' in data_dict, 'gt_boxes should be provided for training'
-            gt_boxes_mask = np.array([n in self.class_names for n in data_dict['gt_names']], dtype=np.bool_)
-
+            if 'gt_boxes' in data_dict:
+                # assert 'gt_boxes' in data_dict, 'gt_boxes should be provided for training'
+                gt_boxes_mask = np.array([n in self.class_names for n in data_dict['gt_names']], dtype=np.bool_)
+            else:
+                gt_boxes_mask = None
+ 
             data_dict = self.data_augmentor.forward(
-                data_dict={
+                data_dict=
+                {
                     **data_dict,
                     'gt_boxes_mask': gt_boxes_mask
-                }
+                } if gt_boxes_mask is not None else data_dict
+
             )
 
         if data_dict.get('gt_boxes', None) is not None:
@@ -505,9 +510,11 @@ class KittiDataset_CMKD(DatasetTemplate_CMKD):
             data_dict=data_dict
         )
 
-        if self.training and len(data_dict['gt_boxes']) == 0:
-            new_index = np.random.randint(self.__len__())
-            return self.__getitem__(new_index)
+        # if self.training and len(data_dict['gt_boxes']) == 0:
+        if self.training and 'gt_boxes' in data_dict:
+            if len(data_dict['gt_boxes']) == 0:
+                new_index = np.random.randint(self.__len__())
+                return self.__getitem__(new_index)
 
         data_dict.pop('gt_names', None)
 

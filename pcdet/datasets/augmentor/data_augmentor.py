@@ -240,12 +240,12 @@ class DataAugmentor(object):
         if data_dict is None:
             return partial(self.random_image_pc_flip, config=config)
 
-        # imgs, points, gt_boxes, calib are required
+        # imgs, points, calib are required
         images = data_dict["images"]
         points = data_dict["points"]
-        gt_boxes = data_dict['gt_boxes']
         calib = data_dict["calib"]
-        # depth map and gt box 2D are optional
+        # optional
+        gt_boxes = data_dict.get('gt_boxes',None)
         depth_maps = data_dict.get('depth_maps',None)
         gt_boxes2d = data_dict.get('gt_boxes2d',None)
 
@@ -263,7 +263,8 @@ class DataAugmentor(object):
 
         data_dict['images'] = images
         data_dict['points'] = points
-        data_dict['gt_boxes'] = gt_boxes
+        if gt_boxes is not None:
+            data_dict['gt_boxes'] = gt_boxes
         if depth_maps is not None:
             data_dict['depth_maps'] = depth_maps
         if gt_boxes2d is not None:
@@ -285,9 +286,10 @@ class DataAugmentor(object):
         for cur_augmentor in self.data_augmentor_queue:
             data_dict = cur_augmentor(data_dict=data_dict)
         
-        data_dict['gt_boxes'][:, 6] = common_utils.limit_period(
-            data_dict['gt_boxes'][:, 6], offset=0.5, period=2 * np.pi
-        )
+        if 'gt_boxes' in data_dict:
+            data_dict['gt_boxes'][:, 6] = common_utils.limit_period(
+                data_dict['gt_boxes'][:, 6], offset=0.5, period=2 * np.pi
+            )
         if 'calib' in data_dict:
             data_dict.pop('calib')
         if 'road_plane' in data_dict:
@@ -298,6 +300,6 @@ class DataAugmentor(object):
             data_dict['gt_names'] = data_dict['gt_names'][gt_boxes_mask]
             if 'gt_boxes2d' in data_dict:
                 data_dict['gt_boxes2d'] = data_dict['gt_boxes2d'][gt_boxes_mask]
-            
             data_dict.pop('gt_boxes_mask')
+
         return data_dict

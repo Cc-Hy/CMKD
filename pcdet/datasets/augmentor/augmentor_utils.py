@@ -172,7 +172,7 @@ def random_image_pc_flip_horizontal(image, depth_map, gt_boxes, calib, points, g
         else:
             aug_depth_map = depth_map
 
-        # Flip 2D boxes 2022.2.4
+        # Flip 2D boxes
         if gt_boxes2d is not None:
             aug_gt_boxes2d = copy.copy(gt_boxes2d)
             aug_gt_boxes2d[:,0] = W - aug_gt_boxes2d[:,0]
@@ -181,29 +181,27 @@ def random_image_pc_flip_horizontal(image, depth_map, gt_boxes, calib, points, g
             aug_gt_boxes2d = gt_boxes2d
 
         # Flip 3D gt_boxes by flipping the centroids in image space
-        aug_gt_boxes = copy.copy(gt_boxes)
+        if gt_boxes is not None:
+            aug_gt_boxes = copy.copy(gt_boxes)
+            locations = aug_gt_boxes[:, :3]
+            img_pts, img_depth = calib.lidar_to_img(locations)
+            img_pts[:, 0] = W - img_pts[:, 0]
+            pts_rect = calib.img_to_rect(u=img_pts[:, 0], v=img_pts[:, 1], depth_rect=img_depth)
+            pts_lidar = calib.rect_to_lidar(pts_rect)
+            aug_gt_boxes[:, :3] = pts_lidar
+            aug_gt_boxes[:, 6] = -1 * aug_gt_boxes[:, 6]
+        else:
+            aug_gt_boxes = gt_boxes
+
+
+        # Flip points
         aug_points = copy.copy(points)      ### lidar
-
-        locations = aug_gt_boxes[:, :3]
         points_org = aug_points[:,:3]       ### cords
-        
-        img_pts, img_depth = calib.lidar_to_img(locations)
         points_trans, depth_trans = calib.lidar_to_img(points_org)  ### pc -> img
-
-        img_pts[:, 0] = W - img_pts[:, 0]
         points_trans[:, 0] = W - points_trans[:, 0]     ### img u,v flip
-
-        
-        pts_rect = calib.img_to_rect(u=img_pts[:, 0], v=img_pts[:, 1], depth_rect=img_depth)
         points_trans_rect = calib.img_to_rect(u=points_trans[:, 0], v=points_trans[:, 1], depth_rect=depth_trans)   ### img -> rect
-
-        pts_lidar = calib.rect_to_lidar(pts_rect)
         points_lidar = calib.rect_to_lidar(points_trans_rect)   ### rect -> lidar
-
-        aug_gt_boxes[:, :3] = pts_lidar
         aug_points[:, :3] = points_lidar        ### cords changed , r unchanged
-
-        aug_gt_boxes[:, 6] = -1 * aug_gt_boxes[:, 6]
 
     else:
         aug_image = image
