@@ -6,7 +6,7 @@ DATA_CONFIG:
     DATA_PATH: '../data/kitti'
 
     INFO_PATH: {
-    'train': [kitti_infos_train_unlabel.pkl],
+    'train': [kitti_infos_train.pkl],
     'val': [kitti_infos_val.pkl],
     }
 
@@ -152,6 +152,14 @@ MODEL_IMG:
             }
         ]
 
+        TARGET_ASSIGNER_CONFIG:
+            NAME: AxisAlignedTargetAssigner
+            POS_FRACTION: -1.0
+            SAMPLE_SIZE: 512
+            NORM_BY_NUM_EXAMPLES: False
+            MATCH_HEIGHT: False
+            BOX_CODER: ResidualCoder
+
         LOSS_CONFIG:
             LOSS_WEIGHTS: {
                 'cls_weight': 2.0,
@@ -237,6 +245,22 @@ MODEL_LIDAR:
                 'unmatched_threshold': 0.35
             }
         ]
+
+        TARGET_ASSIGNER_CONFIG:
+            NAME: AxisAlignedTargetAssigner
+            POS_FRACTION: -1.0
+            SAMPLE_SIZE: 512
+            NORM_BY_NUM_EXAMPLES: False
+            MATCH_HEIGHT: False
+            BOX_CODER: ResidualCoder
+
+        LOSS_CONFIG:
+            LOSS_WEIGHTS: {
+                'cls_weight': 8.0,
+                'loc_weight': 2.0,
+                'dir_weight': 0.2,
+                'code_weights': [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]
+            }
 
     POST_PROCESSING:
         RECALL_THRESH_LIST: [0.3, 0.5, 0.7]

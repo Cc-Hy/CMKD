@@ -6,7 +6,7 @@ DATA_CONFIG:
     DATA_PATH: '../data/kitti'
 
     INFO_PATH: {
-    'train': [kitti_infos_train_soft_3_class.pkl],
+    'train': [kitti_infos_train_soft.pkl],
     'val': [kitti_infos_val.pkl],
     }
 
