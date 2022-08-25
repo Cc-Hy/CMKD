@@ -153,7 +153,7 @@ MODEL_IMG:
         ]
 
         TARGET_ASSIGNER_CONFIG:
-            NAME: AxisAlignedTargetAssigner
+            NAME: AxisAlignedTargetAssignerScore
             POS_FRACTION: -1.0
             SAMPLE_SIZE: 512
             NORM_BY_NUM_EXAMPLES: False
