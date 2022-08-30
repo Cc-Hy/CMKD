@@ -1,5 +1,7 @@
 # CMKD: Cross-Modality Knowledge Distillation Network for Monocular 3D Object Detection
 ## Introduction
+We are still preparing our paper and code, please stay tuned.
+
 This is the official implementation of CMKD with [OpenPCDet](https://github.com/open-mmlab/OpenPCDet).
 
 Meanwhile, we are considering another implementation with [MMDetection3D](https://github.com/open-mmlab/mmdetection3d) depending on the situation.
