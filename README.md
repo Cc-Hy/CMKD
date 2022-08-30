@@ -1,4 +1,4 @@
-# CMKD: Cross-Modality Knowledge Distillation Network for Monocular 3D Object Detection
+# CMKD: Cross-Modality Knowledge Distillation Network for Monocular 3D Object Detection (Coming Soon !)
 ## Introduction
 We are still preparing our paper and code, please stay tuned.
 
