@@ -2,9 +2,9 @@
 ## Introduction
 We are still preparing our paper and code, please stay tuned.
 
-This is the official implementation of CMKD with [OpenPCDet](https://github.com/open-mmlab/OpenPCDet).
+This is the official implementation of CMKD with [OpenPCDet](https://github.com/open-mmlab/OpenPCDet) for KITTI and Waymo datasets.
 
-Meanwhile, we are considering another implementation with [MMDetection3D](https://github.com/open-mmlab/mmdetection3d) depending on the situation.
+We have also implemented another version with [MMDetection3D](https://github.com/open-mmlab/mmdetection3d) for Nuscenes dataset.
 
 ## News
 **[2022.7.18] We release the first version covering the KITTI experiments.**
