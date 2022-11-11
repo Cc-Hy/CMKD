@@ -9,7 +9,7 @@ We have also implemented another version with [MMDetection3D](https://github.com
 ## News
 **[2022.7.18] We release the first version covering the KITTI experiments.**
 
-This implementation has some differences from our paper, but the core idea is the same.
+This implementation has some differences from [our paper](https://link.springer.com/content/pdf/10.1007/978-3-031-20080-9_6.pdf), but the core idea is the same.
 Overall, the current version is faster to train, uses less memory, and has similar performance to the older version. We'll release instructions and more implementations later.
 
 **[2022.7.9] Our paper has been accepted by ECCV 2022 as Oral presentation.** :fire::fire::fire:
