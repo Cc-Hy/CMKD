@@ -1,8 +1,36 @@
-# CMKD: Cross-Modality Knowledge Distillation Network for Monocular 3D Object Detection
-## Introduction
-This is the official implementation of CMKD with [OpenPCDet](https://github.com/open-mmlab/OpenPCDet).
+# CMKD: Cross-Modality Knowledge Distillation Network for Monocular 3D Object Detection (Coming Soon !)
 
-Meanwhile, we are considering another implementation with [MMDetection3D](https://github.com/open-mmlab/mmdetection3d) depending on the situation.
+## Paper
+[Cross-Modality Knowledge Distillation Network for Monocular 3D Object Detection](https://arxiv.org/abs/2211.07171) (arXiv, Supplimentary Included)
+
+[Cross-Modality Knowledge Distillation Network for Monocular 3D Object Detection](https://link.springer.com/chapter/10.1007/978-3-031-20080-9_6) (ECCV Open Access)
+
+[Cross-Modality Knowledge Distillation Network for Monocular 3D Object Detection](https://storage.googleapis.com/waymo-uploads/files/research/3DCam/3DCam_CMKD.pdf) (Waymo Challenge Report)
+
+If you find our papers helpful for your research, you may cite our paper as
+```
+@inproceedings{YuH-CMKD-ECCV2022,
+author = {Yu Hong and
+Hang Dai and
+Yong Ding},
+title = {Cross-Modality Knowledge
+Distillation Network for Monocular 3D Object
+Detection},
+booktitle = {{ECCV}},
+series = {Lecture Notes in Computer Science},
+publisher = {Springer},
+year = {2022}
+}
+```
+
+
+
+## Introduction
+We are preparing the code, please stay tuned.
+
+This is the official implementation of CMKD with [OpenPCDet](https://github.com/open-mmlab/OpenPCDet) for KITTI and Waymo datasets.
+
+We have also implemented another version with [MMDetection3D](https://github.com/open-mmlab/mmdetection3d) for Nuscenes dataset.
 
 ## News
 **[2022.7.18] We release the first version covering the KITTI experiments.**
@@ -18,7 +46,6 @@ Overall, the current version is faster to train, uses less memory, and has simil
 
 In the challenge, we simply extend our baseline model from single-camera version to multi-camera version without any challenge-specific skills and achieve good results. 
 Specifically, we use a lightweight res-50 backbone with 20% of the total training samples, no previous frames, no data augmentation, and no training and testing tricks to rank 3rd in the challenge.
-The technical report can be found [here](https://storage.googleapis.com/waymo-uploads/files/research/3DCam/3DCam_CMKD.pdf).
 
 ## Framework Overview
 ![image](https://user-images.githubusercontent.com/82150240/177261849-be867420-d9e2-49f2-9b1f-0209e383b754.png)
