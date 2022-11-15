@@ -3,7 +3,7 @@
 ## Paper
 [Cross-Modality Knowledge Distillation Network for Monocular 3D Object Detection](https://arxiv.org/abs/2211.07171) (arXiv, Supplimentary Included)
 
-[Cross-Modality Knowledge Distillation Network for Monocular 3D Object Detection](https://link.springer.com/chapter/10.1007/978-3-031-20080-9_6) (ECCV Open Acess)
+[Cross-Modality Knowledge Distillation Network for Monocular 3D Object Detection](https://link.springer.com/chapter/10.1007/978-3-031-20080-9_6) (ECCV Open Access)
 
 
 ## Introduction
