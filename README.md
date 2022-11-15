@@ -1,6 +1,13 @@
 # CMKD: Cross-Modality Knowledge Distillation Network for Monocular 3D Object Detection (Coming Soon !)
+
+## Paper
+[Cross-Modality Knowledge Distillation Network for Monocular 3D Object Detection](https://arxiv.org/abs/2211.07171) (arXiv, Supplimentary Included)
+
+[Cross-Modality Knowledge Distillation Network for Monocular 3D Object Detection](https://link.springer.com/chapter/10.1007/978-3-031-20080-9_6) (ECCV Open Acess)
+
+
 ## Introduction
-We are still preparing our paper and code, please stay tuned.
+We are preparing the code, please stay tuned.
 
 This is the official implementation of CMKD with [OpenPCDet](https://github.com/open-mmlab/OpenPCDet) for KITTI and Waymo datasets.
 
@@ -9,7 +16,7 @@ We have also implemented another version with [MMDetection3D](https://github.com
 ## News
 **[2022.7.18] We release the first version covering the KITTI experiments.**
 
-This implementation has some differences from [our paper](https://link.springer.com/content/pdf/10.1007/978-3-031-20080-9_6.pdf), but the core idea is the same.
+This implementation has some differences from our paper, but the core idea is the same.
 Overall, the current version is faster to train, uses less memory, and has similar performance to the older version. We'll release instructions and more implementations later.
 
 **[2022.7.9] Our paper has been accepted by ECCV 2022 as Oral presentation.** :fire::fire::fire:
