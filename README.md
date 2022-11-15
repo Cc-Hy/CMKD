@@ -5,6 +5,8 @@
 
 [Cross-Modality Knowledge Distillation Network for Monocular 3D Object Detection](https://link.springer.com/chapter/10.1007/978-3-031-20080-9_6) (ECCV Open Access)
 
+[Cross-Modality Knowledge Distillation Network for Monocular 3D Object Detection](https://storage.googleapis.com/waymo-uploads/files/research/3DCam/3DCam_CMKD.pdf) (Waymo Challenge Report)
+
 If you find our papers helpful for your research, you may cite our paper as
 ```
 @inproceedings{YuH-CMKD-ECCV2022,
@@ -44,7 +46,6 @@ Overall, the current version is faster to train, uses less memory, and has simil
 
 In the challenge, we simply extend our baseline model from single-camera version to multi-camera version without any challenge-specific skills and achieve good results. 
 Specifically, we use a lightweight res-50 backbone with 20% of the total training samples, no previous frames, no data augmentation, and no training and testing tricks to rank 3rd in the challenge.
-The technical report can be found [here](https://storage.googleapis.com/waymo-uploads/files/research/3DCam/3DCam_CMKD.pdf).
 
 ## Framework Overview
 ![image](https://user-images.githubusercontent.com/82150240/177261849-be867420-d9e2-49f2-9b1f-0209e383b754.png)
