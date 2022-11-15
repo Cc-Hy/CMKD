@@ -5,6 +5,23 @@
 
 [Cross-Modality Knowledge Distillation Network for Monocular 3D Object Detection](https://link.springer.com/chapter/10.1007/978-3-031-20080-9_6) (ECCV Open Access)
 
+If you find our papers helpful for your research, you may cite our paper as
+```
+@inproceedings{YuH-CMKD-ECCV2022,
+author = {Yu Hong and
+Hang Dai and
+Yong Ding},
+title = {Cross-Modality Knowledge
+Distillation Network for Monocular 3D Object
+Detection},
+booktitle = {{ECCV}},
+series = {Lecture Notes in Computer Science},
+publisher = {Springer},
+year = {2022}
+}
+```
+
+
 
 ## Introduction
 We are preparing the code, please stay tuned.
