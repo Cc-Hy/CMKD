@@ -1,4 +1,4 @@
-# CMKD: Cross-Modality Knowledge Distillation Network for Monocular 3D Object Detection (Coming Soon !)
+# CMKD: Cross-Modality Knowledge Distillation Network for Monocular 3D Object Detection (ECCV 2022 Oral)
 
 ## Paper
 [Cross-Modality Knowledge Distillation Network for Monocular 3D Object Detection](https://arxiv.org/abs/2211.07171) (arXiv, Supplimentary Included)
@@ -33,10 +33,12 @@ This is the official implementation of CMKD with [OpenPCDet](https://github.com/
 We have also implemented another version with [MMDetection3D](https://github.com/open-mmlab/mmdetection3d) for Nuscenes dataset.
 
 ## News
-**[2022.7.18] We release the first version covering the KITTI experiments.**
+**[2022.11.20] We release some instructions and pre-trained models covering the KITTI experiments.**
 
 This implementation has some differences from our paper, but the core idea is the same.
-Overall, the current version is faster to train, uses less memory, and has similar performance to the older version. We'll release instructions and more implementations later.
+Overall, the current version is faster to train, uses less memory, and has similar performance to the older version. 
+
+Waymo experiments and Nuscenes experiments are on the way.
 
 **[2022.7.9] Our paper has been accepted by ECCV 2022 as Oral presentation.** :fire::fire::fire:
 
@@ -52,4 +54,31 @@ Specifically, we use a lightweight res-50 backbone with 20% of the total trainin
 
 ## BEV Features Generation
 ![image](https://user-images.githubusercontent.com/82150240/177973195-8e04f2d1-f945-4332-bfff-49c8568a9c4d.png)
+
+## Use CMKD
+
+### Installation
+
+Please follow [INSTALL](docs/INSTALL.md) to install CMKD.
+
+### Getting Started
+
+Please follow [GETTING_START](docs/GETTING_STARTED.md) to train or evaluate the models.
+
+## Models
+
+### KITTI
+
+|   |  Car Easy@R40|	Car Moderate@R40	|Car Hard@R40	 | Model |
+|---|:---:|:---:|:---:|:---:|
+| [CMKD-R50 (kitti train + eigen clean)](tools/cfgs/kitti_models/CMKD/cmkd_kitti_eigen_R50_scd_V2.yaml)|  34.4  | 23.4  | 19.3  |  [model](https://drive.google.com/file/d/17aijnxhzqTM0XuWyhXo1yk-f3hssdb9T/view?usp=share_link)   |
+| [CMKD-R50 (kitti train + eigen clean)](tools/cfgs/kitti_models/CMKD/cmkd_kitti_eigen_R50_scd_V2.yaml)|  33.9  | 22.8  | 19.5  |  [model](https://drive.google.com/file/d/1Yt-3HXy2ZHo1pjJD4kThOIFa2kl3kZAD/view?usp=share_link)   |
+
+
+                  
+
+
+
+
+
 

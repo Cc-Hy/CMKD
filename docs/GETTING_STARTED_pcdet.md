@@ -10,7 +10,7 @@ Currently we provide the dataloader of KITTI dataset and NuScenes dataset, and t
 ### KITTI Dataset
 * Please download the official [KITTI 3D object detection](http://www.cvlibs.net/datasets/kitti/eval_object.php?obj_benchmark=3d) dataset and organize the downloaded files as follows (the road planes could be downloaded from [[road plane]](https://drive.google.com/file/d/1d5mq0RXRnvHPVeKx6Q612z0YRO1t2wAp/view?usp=sharing), which are optional for data augmentation in the training):
 * If you would like to train [CaDDN](../tools/cfgs/kitti_models/CaDDN.yaml), download the precomputed [depth maps](https://drive.google.com/file/d/1qFZux7KC_gJ0UHEg-qGJKqteE9Ivojin/view?usp=sharing) for the KITTI training set
-* Download the [KITTI Raw data](https://www.cvlibs.net/datasets/kitti/raw_data.php) and put in into data/kitti/raw/KITTI_Raw
+* NOTE: if you already have the data infos from `pcdet v0.1`, you can choose to use the old infos and set the DATABASE_WITH_FAKELIDAR option in tools/cfgs/dataset_configs/kitti_dataset.yaml as True. The second choice is that you can create the infos and gt database again and leave the config unchanged.
 
 ```
 OpenPCDet
@@ -21,23 +21,45 @@ OpenPCDet
 │   │   │   ├──calib & velodyne & label_2 & image_2 & (optional: planes) & (optional: depth_2)
 │   │   │── testing
 │   │   │   ├──calib & velodyne & image_2
-│   │   │── raw
-|   |   |   |——calib & KITTI_Raw & depth_sparss(optional)
 ├── pcdet
 ├── tools
 ```
 
-* Generate the data infos by running the following command (kitti train, kitti val, kitti test): 
+* Generate the data infos by running the following command: 
 ```python 
 python -m pcdet.datasets.kitti.kitti_dataset create_kitti_infos tools/cfgs/dataset_configs/kitti_dataset.yaml
 ```
 
-* Generate the data infos by running the following command (kitti train + eigen clean, unlabeled):
-```python 
-python -m pcdet.datasets.kitti.kitti_dataset_cmkd create_kitti_infos_unlabel tools/cfgs/dataset_configs/kitti_dataset.yaml
+### NuScenes Dataset
+* Please download the official [NuScenes 3D object detection dataset](https://www.nuscenes.org/download) and 
+organize the downloaded files as follows: 
 ```
+OpenPCDet
+├── data
+│   ├── nuscenes
+│   │   │── v1.0-trainval (or v1.0-mini if you use mini)
+│   │   │   │── samples
+│   │   │   │── sweeps
+│   │   │   │── maps
+│   │   │   │── v1.0-trainval  
+├── pcdet
+├── tools
+```
+
+* Install the `nuscenes-devkit` with version `1.0.5` by running the following command: 
+```shell script
+pip install nuscenes-devkit==1.0.5
+```
+
+* Generate the data infos by running the following command (it may take several hours): 
+```python 
+python -m pcdet.datasets.nuscenes.nuscenes_dataset --func create_nuscenes_infos \
+    --cfg_file tools/cfgs/dataset_configs/nuscenes_dataset.yaml \
+    --version v1.0-trainval
+```
+
 ### Waymo Open Dataset
-<!-- * Please download the official [Waymo Open Dataset](https://waymo.com/open/download/), 
+* Please download the official [Waymo Open Dataset](https://waymo.com/open/download/), 
 including the training data `training_0000.tar~training_0031.tar` and the validation 
 data `validation_0000.tar~validation_0007.tar`.
 * Unzip all the above `xxxx.tar` files to the directory of `data/waymo/raw_data` as follows (You could get 798 *train* tfrecord and 202 *val* tfrecord ):  
@@ -74,19 +96,43 @@ python -m pcdet.datasets.waymo.waymo_dataset --func create_waymo_infos \
     --cfg_file tools/cfgs/dataset_configs/waymo_dataset.yaml
 ```
 
-Note that you do not need to install `waymo-open-dataset` if you have already processed the data before and do not need to evaluate with official Waymo Metrics.  -->
-On the way
+Note that you do not need to install `waymo-open-dataset` if you have already processed the data before and do not need to evaluate with official Waymo Metrics. 
+
+
+### Lyft Dataset
+* Please download the official [Lyft Level5 perception dataset](https://level-5.global/data/perception) and 
+organize the downloaded files as follows: 
+```
+OpenPCDet
+├── data
+│   ├── lyft
+│   │   │── ImageSets
+│   │   │── trainval
+│   │   │   │── data & maps & images & lidar & train_lidar
+├── pcdet
+├── tools
+```
+
+* Install the `lyft-dataset-sdk` with version `0.0.8` by running the following command: 
+```shell script
+pip install -U lyft_dataset_sdk==0.0.8
+```
+
+* Generate the data infos by running the following command (it may take several hours): 
+```python 
+python -m pcdet.datasets.lyft.lyft_dataset --func create_lyft_infos \
+    --cfg_file tools/cfgs/dataset_configs/lyft_dataset.yaml
+```
+
+* You need to check carefully since we don't provide a benchmark for it.
+
 
 ## Pretrained Models
-[DeepLabV3 backbone](https://download.pytorch.org/models/deeplabv3_resnet101_coco-586e9e4e.pth) 
-
-[SECOND teacher model](https://drive.google.com/file/d/1DE0F0ZVoFUPcRQcZ4Ali3Q2hUpe9tjSo/view?usp=share_link)
-
+If you would like to train [CaDDN](../tools/cfgs/kitti_models/CaDDN.yaml), download the pretrained [DeepLabV3 model](https://download.pytorch.org/models/deeplabv3_resnet101_coco-586e9e4e.pth) and place within the `checkpoints` directory. Please make sure the [kornia](https://github.com/kornia/kornia) is installed since it is needed for `CaDDN`.
 ```
 OpenPCDet
 ├── checkpoints
 │   ├── deeplabv3_resnet101_coco-586e9e4e.pth
-|   ├── second_teacher
 ├── data
 ├── pcdet
 ├── tools
@@ -97,43 +143,41 @@ OpenPCDet
 
 ### Test and evaluate the pretrained models
 * Test with a pretrained model: 
-```python
-python test_cmkd.py --cfg ${CONFIG_FILE} --batch_size ${BATCH_SIZE} --ckpt ${CKPT}
+```shell script
+python test.py --cfg_file ${CONFIG_FILE} --batch_size ${BATCH_SIZE} --ckpt ${CKPT}
 ```
 
 * To test all the saved checkpoints of a specific training setting and draw the performance curve on the Tensorboard, add the `--eval_all` argument: 
-```python
-python test_cmkd.py --cfg ${CONFIG_FILE} --batch_size ${BATCH_SIZE}  --ckpt_dir ${CKPT_DIR}  --eval_all
+```shell script
+python test.py --cfg_file ${CONFIG_FILE} --batch_size ${BATCH_SIZE} --eval_all
 ```
 
 * To test with multiple GPUs:
-```python
-CUDA_VISIBLE_DEVICES=0,1 python -m torch.distributed.launch --nproc_per_node=2 test_cmkd.py --launcher pytorch --cfg ${CONFIG_FILE} --tcp_port 16677 --ckpt ${CKPT}
+```shell script
+sh scripts/dist_test.sh ${NUM_GPUS} \
+    --cfg_file ${CONFIG_FILE} --batch_size ${BATCH_SIZE}
+
+# or
+
+sh scripts/slurm_test_mgpu.sh ${PARTITION} ${NUM_GPUS} \
+    --cfg_file ${CONFIG_FILE} --batch_size ${BATCH_SIZE}
 ```
 
 
 ### Train a model
-
-* Train with a single GPU:
-```python
-python train.py --cfg_file ${CONFIG_FILE} --pretrained_lidar_model ${TEACHER_MODEL_PATH}
-```
+You could optionally add extra command line parameters `--batch_size ${BATCH_SIZE}` and `--epochs ${EPOCHS}` to specify your preferred parameters. 
+  
 
 * Train with multiple GPUs or multiple machines
-```
-CUDA_VISIBLE_DEVICES=0,1 python -m torch.distributed.launch --nproc_per_node=2 train_cmkd.py --launcher pytorch --cfg ${CONFIG_FILE} --tcp_port 16677 --pretrained_lidar_model ${TEACHER_MODEL_PATH}
+```shell script
+sh scripts/dist_train.sh ${NUM_GPUS} --cfg_file ${CONFIG_FILE}
+
+# or 
+
+sh scripts/slurm_train.sh ${PARTITION} ${JOB_NAME} ${NUM_GPUS} --cfg_file ${CONFIG_FILE}
 ```
 
-* We recommand to use the following training skill (BEV first, then whole model)
-```
-python train_cmkd.py --cfg xxx_bev.yaml ...
-python train_cmkd.py --cfg xxx.yaml --pretrained_img_model ${BEV_pretrained_model_path} ...
-```
-
-* To reproduce our results, use
-```
-CUDA_VISIBLE_DEVICES=0,1 python -m torch.distributed.launch --nproc_per_node=2 train_cmkd.py --launcher pytorch --cfg ../tools/cfgs/kitti_models/CMKD/cmkd_kitti_eigen_R50_scd_bev.yaml --tcp_port 16677 --pretrained_lidar_model checkpoints/second_teacher.pth
-
-CUDA_VISIBLE_DEVICES=0,1 python -m torch.distributed.launch --nproc_per_node=2 train_cmkd.py --launcher pytorch --cfg ../tools/cfgs/kitti_models/CMKD/cmkd_kitti_eigen_R50_scd_V2.yaml  --tcp_port 16677 --pretrained_lidar_model checkpoints/second_teacher.pth
---pretrained_img_model ../output/kitti_models/CMKD/cmkd_kitti_eigen_R50_scd_bev/default/ckpt/checkpoint_epoch_30.pth
+* Train with a single GPU:
+```shell script
+python train.py --cfg_file ${CONFIG_FILE}
 ```

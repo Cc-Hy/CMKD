@@ -7,7 +7,8 @@ DATA_CONFIG:
     DATA_PATH: '../data/kitti'
 
     INFO_PATH: {
-    'train': [kitti_infos_eigen_train_soft.pkl],
+    # 'train': [kitti_infos_eigen_train_soft.pkl],
+    'train': [kitti_infos_kitti_train_and_eigen_clean.pkl],
     'val': [kitti_infos_val.pkl],
     }
 
@@ -89,9 +90,6 @@ MODEL_IMG:
         NAME: SCNET
         NUM_BLOCKS: 5
 
-    GT_MASK_GENERATE:
-        NAME: GTMaskGenerate
-        FEATURE_MAP_STRIDE: 8
 
 MODEL_LIDAR:
     NAME: CMKD_LIDAR

@@ -167,9 +167,9 @@ class KittiDataset_CMKD(DatasetTemplate_CMKD):
 
         return pts_valid_flag
 
-    def get_infos(self, your_label_path, num_workers=4, has_label=True, count_inside_pts=True, sample_id_list=None):
+    def get_infos(self, your_label_path=None, num_workers=4, has_label=True, count_inside_pts=True, sample_id_list=None):
         import concurrent.futures as futures
-        
+
         def process_single_scene(sample_idx):
 
             print('%s sample_idx: %s' % (self.split, sample_idx))
@@ -522,7 +522,7 @@ class KittiDataset_CMKD(DatasetTemplate_CMKD):
 
 
 #TODO:incomplete?
-def create_kitti_infos_soft(dataset_cfg, class_names, data_path, save_path, split_name, your_label_path, workers=4):
+def create_kitti_infos_soft(dataset_cfg, class_names, data_path, save_path, split_name, your_label_path=None, workers=4):
     dataset = KittiDataset_CMKD(dataset_cfg=dataset_cfg, class_names=class_names, root_path=data_path, training=False)
     
     soft_label_filename = save_path / ('kitti_infos_%s.pkl' % split_name)
@@ -540,6 +540,22 @@ def create_kitti_infos_soft(dataset_cfg, class_names, data_path, save_path, spli
 
     # set split, get sample id list
     kitti_infos = dataset.get_infos(your_label_path, num_workers=workers, has_label=False, count_inside_pts=True)
+    with open(soft_label_filename, 'wb') as f:
+        pickle.dump(kitti_infos, f)
+    print('Kitti info train file is saved to %s' % soft_label_filename)
+    
+    print('---------------Data preparation Done---------------')
+
+def create_kitti_infos_unlabel(dataset_cfg, class_names, data_path, save_path, split_name, workers=4):
+    dataset = KittiDataset_CMKD(dataset_cfg=dataset_cfg, class_names=class_names, root_path=data_path, training=False)
+
+    soft_label_filename = save_path / ('kitti_infos_%s.pkl' % split_name)
+    dataset.set_split(split_name)
+
+    print('---------------Start to generate data infos---------------')
+
+    # set split, get sample id list
+    kitti_infos = dataset.get_infos(num_workers=workers, has_label=False, count_inside_pts=True)
     with open(soft_label_filename, 'wb') as f:
         pickle.dump(kitti_infos, f)
     print('Kitti info train file is saved to %s' % soft_label_filename)
@@ -565,4 +581,19 @@ if __name__ == '__main__':
             split_name=split_name,
             your_label_path=your_label_path,
         )
+
+    elif sys.argv.__len__() > 1 and sys.argv[1] == 'create_kitti_infos_unlabel':
+        import yaml
+        from pathlib import Path
+        from easydict import EasyDict
+        dataset_cfg = EasyDict(yaml.load(open(sys.argv[2])))
+        split_name = 'kitti_train_and_eigen_clean'
+        ROOT_DIR = (Path(__file__).resolve().parent / '../../../').resolve()
+        create_kitti_infos_unlabel(
+            dataset_cfg=dataset_cfg,
+            class_names=['Car', 'Pedestrian', 'Cyclist'],
+            data_path=ROOT_DIR / 'data' / 'kitti',
+            save_path=ROOT_DIR / 'data' / 'kitti',
+            split_name=split_name,
+        )    
 
