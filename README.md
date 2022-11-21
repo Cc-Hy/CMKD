@@ -71,7 +71,7 @@ Please follow [GETTING_START](docs/GETTING_STARTED.md) to train or evaluate the 
 
 |   |  Car Easy@R40|	Car Moderate@R40	|Car Hard@R40	 | Model |
 |---|:---:|:---:|:---:|:---:|
-| [CMKD-R50 (kitti train + eigen clean)](tools/cfgs/kitti_models/CMKD/cmkd_kitti_eigen_R50_scd_V2.yaml)|  34.4  | 23.4  | 19.3  |  [model](https://drive.google.com/file/d/17aijnxhzqTM0XuWyhXo1yk-f3hssdb9T/view?usp=share_link)   |
+| [CMKD-R50 (kitti train + eigen clean)](tools/cfgs/kitti_models/CMKD/cmkd_kitti_eigen_R50_scd_V2.yaml)|  34.4  | 23.0  | 19.3  |  [model](https://drive.google.com/file/d/17aijnxhzqTM0XuWyhXo1yk-f3hssdb9T/view?usp=share_link)   |
 | [CMKD-R50 (kitti train + eigen clean)](tools/cfgs/kitti_models/CMKD/cmkd_kitti_eigen_R50_scd_V2.yaml)|  33.9  | 22.8  | 19.5  |  [model](https://drive.google.com/file/d/1Yt-3HXy2ZHo1pjJD4kThOIFa2kl3kZAD/view?usp=share_link)   |
 
 
