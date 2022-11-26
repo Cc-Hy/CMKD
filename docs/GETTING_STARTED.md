@@ -22,7 +22,7 @@ OpenPCDet
 │   │   │── testing
 │   │   │   ├──calib & velodyne & image_2
 │   │   │── raw
-|   |   |   |——calib & KITTI_Raw & depth_sparss(optional)
+|   |   |   |——calib & KITTI_Raw & depth_sparse(optional)
 ├── pcdet
 ├── tools
 ```
