@@ -404,7 +404,7 @@ class Detector3DTemplate_CMKD(nn.Module):
 
     def load_params_from_file(self, filename, logger, to_cpu=False):
         if not os.path.isfile(filename):
-            raise FileNotFoundError
+            raise FileNotFoundError ('can not find ' + filename)
 
         logger.info('==> Loading parameters from checkpoint %s to %s' % (filename, 'CPU' if to_cpu else 'GPU'))
         loc_type = torch.device('cpu') if to_cpu else None
