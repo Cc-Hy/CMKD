@@ -15,7 +15,7 @@ import numpy as np
 import kornia
 import kornia.augmentation as ka
 from ..model_utils import model_nms_utils
-
+import cv2
 
 class CMKD(nn.Module):
     def __init__(self, model_cfg):
@@ -31,12 +31,14 @@ class CMKD(nn.Module):
         self.bev_loss_fun = torch.nn.MSELoss(reduction='none')
         self.bev_loss_type = model_cfg.get('LOSS_BEV_TYPE', 'L2')
         self.bev_loss_weight = model_cfg.get('LOSS_BEV_WEIGHT', 1)
+        self.use_nonzero_mask = model_cfg.get('use_nonzero_mask', False)
         
         # pass to model img
         self.calculate_depth_loss = model_cfg.get('LOSS_DEPTH', False)
         self.calculate_rpn_loss = model_cfg.get('LOSS_PRN', False)
 
         self.amp_training = False
+        self.bev_layer = model_cfg.get('bev_layer', 'spatial_features')
 
     def forward(self, batch_dict):
         loss, tb_dict, disp_dict = self.get_training_loss(batch_dict)
@@ -75,32 +77,33 @@ class CMKD(nn.Module):
         loss_rpn = ret_dict.get('loss', torch.tensor(0))
 
         # bev_loss
-        bev_img = batch_dict.get('spatial_features', None)
+        bev_img = batch_dict.get(self.bev_layer, None)
         gt_mask = batch_dict.get('gt_mask', None)
         loss_bev = torch.tensor(0)
 
         if (bev_img is not None) and (bev_lidar is not None) and self.calculate_bev_loss:
-    
+
+            bev_loss_mask = torch.ones((bev_lidar.shape[0], 1, bev_lidar.shape[2], bev_lidar.shape[3]), device = bev_lidar.device)
+            if gt_mask:
+                bev_loss_mask *= gt_mask
+            if self.use_nonzero_mask:
+                nonzero_mask = (bev_lidar.sum(1,keepdim=True)!=0).float()
+                nonzero_mask[nonzero_mask==0] = 0.05
+                bev_loss_mask *= nonzero_mask
+            noralizer = bev_loss_mask.numel() / bev_loss_mask.sum()
+
             if self.bev_loss_type == 'L2':
-                if gt_mask is not None:
-                    gt_mask_plus = gt_mask.clone()
-                    gt_mask_plus[gt_mask==0] = 0.3
-                    loss_bev = (self.bev_loss_fun(bev_img,bev_lidar)*gt_mask_plus).mean()*32
-                else:
-                    loss_bev = (self.bev_loss_fun(bev_img,bev_lidar)).mean()*32
+                loss_bev = (self.bev_loss_fun(bev_img,bev_lidar)*bev_loss_mask).mean()*noralizer
 
             elif self.bev_loss_type == 'SUM':
                 B,C,H,W = bev_img.shape
                 with torch.no_grad():
                     mean_img = bev_img.mean()
                     mean_lidar = bev_lidar.mean()
-                if gt_mask is not None:
-                    gt_mask_plus = gt_mask.clone()
-                    gt_mask_plus[gt_mask==0] = 0.3
-                    loss_bev = (self.bev_loss_fun(bev_img.sum(dim=1)/C/mean_img,bev_lidar.sum(dim=1)/C/mean_lidar)*gt_mask_plus).mean()*0.1
-                else:
-                    loss_bev = (self.bev_loss_fun(bev_img.sum(dim=1)/C/mean_img,bev_lidar.sum(dim=1)/C/mean_lidar)).mean()*0.05
-        
+                loss_bev = (self.bev_loss_fun(bev_img.sum(dim=1)/C/mean_img,bev_lidar.sum(dim=1)/C/mean_lidar)*bev_loss_mask).mean()
+
+            loss_bev *= self.bev_loss_weight
+
         #all loss
         loss = loss_bev + loss_rpn
 
@@ -264,6 +267,13 @@ class CMKD_MONO(Detector3DTemplate_CMKD):
                 final_scores = selected_scores
                 final_labels = label_preds[selected]
                 final_boxes = box_preds[selected]
+            
+            if getattr(self, 'vis_online', False):
+                from pcdet.utils import vis_utils
+                path = '../data/kitti/training/image_2/' + str(batch_dict['frame_id'][index]) + '.png'
+                img = cv2.imread(path)
+
+                vis_utils.draw_box_on_img(final_boxes,img,batch_dict['trans_lidar_to_cam'][index], batch_dict['trans_cam_to_img'][index])
 
             recall_dict = self.generate_recall_record(
                 box_preds=final_boxes if 'rois' not in batch_dict else src_box_preds,
@@ -301,6 +311,8 @@ class CMKD_LIDAR(Detector3DTemplate_CMKD):
     def __init__(self, model_cfg, num_class, dataset):
         super().__init__(model_cfg=model_cfg, num_class=num_class, dataset=dataset)
         self.module_list = self.build_networks()
+        self.bev_layer = model_cfg.get('bev_layer', 'spatial_features')
+        self.res_layer = model_cfg.get('res_layer', 'teacher_pred')
 
 
     def forward(self, batch_dict):
@@ -308,11 +320,9 @@ class CMKD_LIDAR(Detector3DTemplate_CMKD):
         for cur_module in self.module_list:
             batch_dict = cur_module(batch_dict)
 
-        bev_lidar = batch_dict.get('spatial_features', None)
+        bev_lidar = batch_dict.get(self.bev_layer, None)
 
-        #add teacher pred for center head
-
-        teacher_pred = batch_dict.get('teacher_pred', None)
+        teacher_pred = batch_dict.get(self.res_layer, None)
 
         return bev_lidar, teacher_pred
 

@@ -10,6 +10,7 @@ from .. import backbones_2d, backbones_3d, dense_heads, roi_heads
 from ..backbones_2d import map_to_bev, domain_adaptation
 from ..backbones_3d import pfe, vfe
 from ..model_utils import model_nms_utils
+import cv2
 
 class Detector3DTemplate_CMKD(nn.Module):
     def __init__(self, model_cfg, num_class, dataset):
@@ -312,6 +313,13 @@ class Detector3DTemplate_CMKD(nn.Module):
                 recall_dict=recall_dict, batch_index=index, data_dict=batch_dict,
                 thresh_list=post_process_cfg.RECALL_THRESH_LIST
             )
+
+            if getattr(self, 'vis_online', False):
+                from pcdet.utils import vis_utils
+                path = '../data/kitti/testing/image_2/' + str(batch_dict['frame_id'][index]) + '.png'
+                img = cv2.imread(path)
+
+                vis_utils.draw_box_on_img(final_boxes,img,batch_dict['trans_lidar_to_cam'][index], batch_dict['trans_cam_to_img'][index])
 
             record_dict = {
                 'pred_boxes': final_boxes,

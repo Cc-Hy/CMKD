@@ -43,6 +43,8 @@ def parse_config():
     parser.add_argument('--debug', action='store_true', default=False, help='')
     parser.add_argument('--mem', action='store_true', default=False, help='')
 
+    parser.add_argument('--vis_online', action='store_true', default=False, help='whether to evaluate all checkpoints')
+
     args = parser.parse_args()
 
     cfg_from_yaml_file(args.cfg_file, cfg)
@@ -234,13 +236,16 @@ def main():
         dataset_cfg=cfg.DATA_CONFIG,
         class_names=cfg.CLASS_NAMES,
         batch_size=args.batch_size,
-        dist=dist_test, workers=args.workers, logger=logger, training=False, drop_last = False, debug = args.debug
+        dist=dist_test, workers=args.workers, logger=logger, training=False, drop_last = False, debug = args.debug, shuffle=False
     )
 
     model = build_network(model_cfg=cfg.MODEL_IMG, num_class=len(cfg.CLASS_NAMES), dataset=test_set)
     
     if args.mem:
         model.vfe.ffn.ddn.save_mem()
+
+    if args.vis_online:
+        model.vis_online = True
 
     with torch.no_grad():
         if args.eval_all:

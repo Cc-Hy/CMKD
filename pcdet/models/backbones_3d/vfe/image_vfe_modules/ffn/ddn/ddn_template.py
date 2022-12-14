@@ -15,7 +15,7 @@ except:
     
 class DDNTemplate(nn.Module):
 
-    def __init__(self, constructor, feat_extract_layer, num_classes, pretrained_path=None, aux_loss=None):
+    def __init__(self, constructor, feat_extract_layer, num_classes, pretrained_path=None, aux_loss=None, norm=True):
         """
         Initializes depth distribution network.
         Args:
@@ -29,6 +29,7 @@ class DDNTemplate(nn.Module):
         self.num_classes = num_classes
         self.pretrained_path = pretrained_path
         self.pretrained = pretrained_path is not None
+        self.norm = norm
         self.aux_loss = aux_loss
 
         if self.pretrained:
@@ -157,7 +158,8 @@ class DDNTemplate(nn.Module):
             mask = torch.isnan(x)
 
             # Match ResNet pretrained preprocessing
-            x = normalize(x, mean=self.norm_mean, std=self.norm_std)
+            if self.norm:
+                x = normalize(x, mean=self.norm_mean, std=self.norm_std)
 
             # Make padded pixels = 0
             x[mask] = 0
