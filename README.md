@@ -63,10 +63,10 @@ In the challenge, we simply extend our baseline model from single-camera version
 Specifically, we use a lightweight res-50 backbone with 20% of the total training samples, no previous frames, no data augmentation, and no training and testing tricks to rank 3rd in the challenge.
 
 ## Framework Overview
-![image](/docs/BEV%20generation.png)
+![image](/docs/framework.png)
 
 ## BEV Features Generation
-![image](/docs/framework.png)
+![image](/docs/BEV%20generation.png)
 
 ## Use CMKD
 
