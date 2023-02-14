@@ -1,0 +1,133 @@
+CLASS_NAMES: ['Car', 'Pedestrian', 'Cyclist']
+
+
+DATA_CONFIG:
+    _BASE_CONFIG_: cfgs/dataset_configs/kitti_dataset.yaml
+    DATASET: 'KittiDataset_CMKD'
+    DATA_PATH: '../data/kitti'
+
+    INFO_PATH: {
+    'train': [kitti_infos_train.pkl],
+    'val': [kitti_infos_val.pkl],
+    }
+
+    POINT_CLOUD_RANGE: [2, -30.08, -3.0, 46.8, 30.08, 1.0]
+    GET_ITEM_LIST: ["images", "calib_matricies", "points", "depth_maps"]
+    FOV_POINTS_ONLY: True
+
+    DATA_AUGMENTOR:
+        DISABLE_AUG_LIST: ['placeholder']
+        AUG_CONFIG_LIST:
+            - NAME: random_image_pc_flip
+              ALONG_AXIS_LIST: ['horizontal']
+
+    DATA_PROCESSOR:
+        - NAME: mask_points_and_boxes_outside_range
+          REMOVE_OUTSIDE_BOXES: True
+
+        - NAME: calculate_grid_size
+          VOXEL_SIZE_IMG: [0.32, 0.32, 0.4]
+
+        - NAME: transform_points_to_voxels
+          VOXEL_SIZE_LIDAR: [0.04, 0.04, 0.1]
+          MAX_POINTS_PER_VOXEL: 5
+          MAX_NUMBER_OF_VOXELS: {
+            'train': 16000,
+            'test': 40000
+          }
+
+        - NAME: downsample_depth_map
+          DOWNSAMPLE_FACTOR: 8
+
+
+CMKD_CFG:
+    LOSS_BEV: True
+    LOSS_DEPTH: True
+    LOSS_PRN: False
+
+
+MODEL_IMG:
+    NAME: CMKD_MONO
+
+    VFE:
+        NAME: ImageVFE
+        FFN:
+            NAME: DepthFFN
+            DDN:
+                NAME: DDNDeepLabV3
+                BACKBONE_NAME: ResNet50
+                ARGS: {
+                    "feat_extract_layer": "layer3",
+                    "pretrained_path": "../checkpoints/deeplabv3_resnet50_coco-cd0a2569.pth"
+                }
+            CHANNEL_REDUCE: {
+                "in_channels": 1024,
+                "out_channels": 64,
+                "kernel_size": 1,
+                "stride": 1,
+                "bias": False
+            }
+            DISCRETIZE: {
+                "mode": LID,
+                "num_bins": 120,
+                "depth_min": 2.0,
+                "depth_max": 46.8
+            }
+            LOSS:
+                NAME: DDNLoss
+                ARGS: {
+                    'weight': 0.5,
+                    'alpha': 0.25,
+                    'gamma': 2.0,
+                }
+        F2V:
+            NAME: FrustumToVoxel
+            SAMPLER: {
+                "mode": "bilinear",
+                "padding_mode": "zeros"
+            }
+
+    MAP_TO_BEV:
+        NAME: Conv2DCollapse
+        NUM_IN_FEATURES: 64
+        NUM_BEV_FEATURES: 128
+        ARGS: {
+            "kernel_size": 1,
+            "stride": 1,
+            "bias": False
+        }
+
+    DOMAIN_ADAPTATION:
+        NAME: SCNET
+        NUM_BLOCKS: 5
+
+
+MODEL_LIDAR:
+    NAME: CMKD_LIDAR
+
+    VFE:
+        NAME: MeanVFE
+
+    BACKBONE_3D:
+        NAME: VoxelResBackBone8x_c64
+
+    MAP_TO_BEV:
+        NAME: HeightCompression
+        NUM_BEV_FEATURES: 128
+
+
+OPTIMIZATION:
+    BATCH_SIZE_PER_GPU: 4
+    NUM_EPOCHS: 60
+
+    OPTIMIZER: AdamW
+    LR: 0.002
+
+    SCHEDULER: OneCycleLR
+    PCT_START: 0.4
+    BASE_MOM: 0.85
+    MAX_MOM: 0.95
+    START_RATE: 10
+    END_RATE: 1000
+
+    GRAD_NORM_CLIP: 10
