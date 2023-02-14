@@ -33,6 +33,19 @@ This is the official implementation of CMKD with [OpenPCDet](https://github.com/
 We have also implemented another version with [MMDetection3D](https://github.com/open-mmlab/mmdetection3d) for Nuscenes dataset.
 
 ## News
+**[2023.2.14] We have several updates.**
+
+**Notice: Due to the short schedule, instructions and pre-trained models will be released gradually in the near future, and there may be many issues and bugs, please feel free to let us know if you have any questions.**
+
+* Support center head in response distillation
+* Support more teacher models in the framework (We now have SECOND, CenterPoint and PointPillar), more pre-trained models will be released later
+* Support to set different feature level as the distillation guidance
+* Add visualization utils to visualize the BEV feature maps and the detection results
+* Support for Nuscenes dataset will be released very soon
+
+
+
+
 **[2022.11.20] We release some instructions and pre-trained models covering the KITTI experiments.**
 
 This implementation has some differences from our paper, but the core idea is the same.
@@ -50,10 +63,10 @@ In the challenge, we simply extend our baseline model from single-camera version
 Specifically, we use a lightweight res-50 backbone with 20% of the total training samples, no previous frames, no data augmentation, and no training and testing tricks to rank 3rd in the challenge.
 
 ## Framework Overview
-![image](https://user-images.githubusercontent.com/82150240/177261849-be867420-d9e2-49f2-9b1f-0209e383b754.png)
+![image](/docs/BEV%20generation.png)
 
 ## BEV Features Generation
-![image](https://user-images.githubusercontent.com/82150240/177973195-8e04f2d1-f945-4332-bfff-49c8568a9c4d.png)
+![image](/docs/framework.png)
 
 ## Use CMKD
 
@@ -69,14 +82,26 @@ Please follow [GETTING_START](docs/GETTING_STARTED.md) to train or evaluate the 
 
 ### KITTI
 
-|   |  Car Easy@R40|	Car Moderate@R40	|Car Hard@R40	 | Model |
-|---|:---:|:---:|:---:|:---:|
-| [CMKD-R50 (kitti train + eigen clean)](tools/cfgs/kitti_models/CMKD/cmkd_kitti_eigen_R50_scd_V2.yaml)|  34.4  | 23.0  | 19.3  |  [model](https://drive.google.com/file/d/17aijnxhzqTM0XuWyhXo1yk-f3hssdb9T/view?usp=share_link)   |
-| [CMKD-R50 (kitti train + eigen clean)](tools/cfgs/kitti_models/CMKD/cmkd_kitti_eigen_R50_scd_V2.yaml)|  33.9  | 22.8  | 19.5  |  [model](https://drive.google.com/file/d/1Yt-3HXy2ZHo1pjJD4kThOIFa2kl3kZAD/view?usp=share_link)   |
+|   | Teacher Model|  Car Easy@R40|	Car Moderate@R40	|Car Hard@R40	 | Model |
+|---|:---:|:---:|:---:|:---:|:---:|
+| [CMKD-R50 (kitti train + eigen clean)](tools/cfgs/kitti_models/CMKD/CMKD-scd/cmkd_kitti_eigen_R50_scd_V2.yaml)| SECOND|  34.4  | 23.0  | 19.3  |  [model](https://drive.google.com/file/d/17aijnxhzqTM0XuWyhXo1yk-f3hssdb9T/view?usp=share_link)   |
+| [CMKD-R50 (kitti train)](tools/cfgs/kitti_models/CMKD/CMKD-scd/cmkd_kitti_R50_scd_V2.yaml)|SECOND|  -  | -  | -  |  Coming Soon  |
+| CMKD-R50 (kitti train + eigen clean)|CenterPoint|  -  | -  | -  |  Coming Soon  |
+| CMKD-R50 (kitti train)|CenterPoint|  -  | -  | -  |  Coming Soon  |
+| CMKD-R50 (kitti train + eigen clean)|PointPillar|  -  | -  | -  |  Coming Soon  |
+| CMKD-R50 (kitti train)|PointPillar|  -  | -|-  | Coming Soon  |
 
 
+
+### Waymo
+Coming Soon
                   
 
+### Nuscenes
+|   |  mAP |	NDS |Model | 
+|---|:---:|:---:|:---:|
+| BEVDet-R50|  30.7  | 38.2  | Coming Soon |
+| BEVDet-R50 + CMKD|  34.7  | 42.6  | Coming Soon |
 
 
 
