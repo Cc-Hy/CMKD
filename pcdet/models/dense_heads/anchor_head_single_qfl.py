@@ -4,7 +4,7 @@ import torch
 
 from .anchor_head_template import AnchorHeadTemplate
 from ...ops.iou3d_nms import iou3d_nms_utils
-from ...utils.loss_utils import QualityFocalLoss
+from ...utils.loss_utils import QualityFocalLoss, QualityFocalLoss_no_reduction
 
 class AnchorHeadSingleQFL(AnchorHeadTemplate):
     def __init__(self, model_cfg, input_channels, num_class, class_names, grid_size, point_cloud_range,
@@ -35,7 +35,7 @@ class AnchorHeadSingleQFL(AnchorHeadTemplate):
             self.conv_dir_cls = None
         self.init_weights()
 
-        self.QFL = QualityFocalLoss(beta = 2.0)
+        self.QFL = QualityFocalLoss_no_reduction(beta = 2.0)
         
     def init_weights(self):
         pi = 0.01
