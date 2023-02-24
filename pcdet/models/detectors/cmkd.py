@@ -30,7 +30,7 @@ class CMKD(nn.Module):
         self.calculate_bev_loss = model_cfg.get('LOSS_BEV', True)
         self.bev_loss_fun = torch.nn.MSELoss(reduction='none')
         self.bev_loss_type = model_cfg.get('LOSS_BEV_TYPE', 'L2')
-        self.bev_loss_weight = model_cfg.get('LOSS_BEV_WEIGHT', 1)
+        self.bev_loss_weight = model_cfg.get('LOSS_BEV_WEIGHT', 32)
         self.use_nonzero_mask = model_cfg.get('use_nonzero_mask', False)
         
         # pass to model img
