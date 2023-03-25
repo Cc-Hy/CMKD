@@ -78,34 +78,36 @@ python -m pcdet.datasets.waymo.waymo_dataset --func create_waymo_infos \
 Note that you do not need to install `waymo-open-dataset` if you have already processed the data before and do not need to evaluate with official Waymo Metrics.  -->
 On the way
 
+### Nuscenes Dataset
+Please refer to [this link](https://github.com/Cc-Hy/CMKD-MV).
+
 ## Pretrained Models
-[DeepLabV3 backbone](https://download.pytorch.org/models/deeplabv3_resnet101_coco-586e9e4e.pth) 
 
-[SECOND teacher model](https://drive.google.com/file/d/1DE0F0ZVoFUPcRQcZ4Ali3Q2hUpe9tjSo/view?usp=share_link)
-
-If you would like to use these pretrained models, download them and put them into ../checkpoints
+If you would like to use some pretrained models, download them and put them into ../checkpoints
 ```
 OpenPCDet
 ├── checkpoints
-│   ├── deeplabv3_resnet101_coco-586e9e4e.pth
-|   ├── second_teacher
+|   ├── second_teacher.pth
+|   ├── ···
 ├── data
 ├── pcdet
 ├── tools
 ```
+## Training & Testing for LiDAR-based Teacher Models
 
-## Training & Testing
+Please see [the official OpenPCDet instructions](https://github.com/open-mmlab/OpenPCDet/blob/master/docs/GETTING_STARTED.md) to train or test a LiDAR-based teacher model.
 
 
-### Test and evaluate the pretrained models
+## Training & Testing for Image-based Student Models
+### Evaluate the pretrained models
 * Test with a pretrained model: 
 ```python
-python test_cmkd.py --cfg ${CONFIG_FILE} --batch_size ${BATCH_SIZE} --ckpt ${CKPT}
+python test_cmkd.py --cfg ${CONFIG_FILE} --ckpt ${CKPT}
 ```
 
 * To test all the saved checkpoints of a specific training setting and draw the performance curve on the Tensorboard, add the `--eval_all` argument: 
 ```python
-python test_cmkd.py --cfg ${CONFIG_FILE} --batch_size ${BATCH_SIZE}  --ckpt_dir ${CKPT_DIR}  --eval_all
+python test_cmkd.py --cfg ${CONFIG_FILE} --ckpt_dir ${CKPT_DIR}  --eval_all
 ```
 
 * To test with multiple GPUs:
@@ -113,12 +115,11 @@ python test_cmkd.py --cfg ${CONFIG_FILE} --batch_size ${BATCH_SIZE}  --ckpt_dir 
 CUDA_VISIBLE_DEVICES=0,1 python -m torch.distributed.launch --nproc_per_node=2 test_cmkd.py --launcher pytorch --cfg ${CONFIG_FILE} --tcp_port 16677 --ckpt ${CKPT}
 ```
 
-
 ### Train a model
 
 * Train with a single GPU:
 ```python
-python train.py --cfg_file ${CONFIG_FILE} --pretrained_lidar_model ${TEACHER_MODEL_PATH}
+python train_cmkd.py --cfg_file ${CONFIG_FILE} --pretrained_lidar_model ${TEACHER_MODEL_PATH}
 ```
 
 * Train with multiple GPUs or multiple machines
@@ -126,16 +127,16 @@ python train.py --cfg_file ${CONFIG_FILE} --pretrained_lidar_model ${TEACHER_MOD
 CUDA_VISIBLE_DEVICES=0,1 python -m torch.distributed.launch --nproc_per_node=2 train_cmkd.py --launcher pytorch --cfg ${CONFIG_FILE} --tcp_port 16677 --pretrained_lidar_model ${TEACHER_MODEL_PATH}
 ```
 
-* We recommand to use the following training skill (BEV first, then whole model)
+* We recommand to use the following training skill (BEV optimization first, then detection)
 ```
-python train_cmkd.py --cfg xxx_bev.yaml ...
-python train_cmkd.py --cfg xxx.yaml --pretrained_img_model ${BEV_pretrained_model_path} ...
+python train_cmkd.py --cfg xxx_bev.yaml ···
+python train_cmkd.py --cfg xxx.yaml --pretrained_img_model ${BEV_pretrained_model_path} ···
 ```
 
-* To reproduce our results, use
+* To reproduce our results with SECOND teacher, use
 ```
-CUDA_VISIBLE_DEVICES=0,1 python -m torch.distributed.launch --nproc_per_node=2 train_cmkd.py --launcher pytorch --cfg ../tools/cfgs/kitti_models/CMKD/cmkd_kitti_eigen_R50_scd_bev.yaml --tcp_port 16677 --pretrained_lidar_model checkpoints/second_teacher.pth
+CUDA_VISIBLE_DEVICES=0,1 python -m torch.distributed.launch --nproc_per_node=2 train_cmkd.py --launcher pytorch --cfg ../tools/cfgs/kitti_models/CMKD/cmkd_kitti_eigen_R50_scd_bev.yaml --tcp_port 16677 --pretrained_lidar_model ../checkpoints/second_teacher.pth
 
-CUDA_VISIBLE_DEVICES=0,1 python -m torch.distributed.launch --nproc_per_node=2 train_cmkd.py --launcher pytorch --cfg ../tools/cfgs/kitti_models/CMKD/cmkd_kitti_eigen_R50_scd_V2.yaml  --tcp_port 16677 --pretrained_lidar_model checkpoints/second_teacher.pth
+CUDA_VISIBLE_DEVICES=0,1 python -m torch.distributed.launch --nproc_per_node=2 train_cmkd.py --launcher pytorch --cfg ../tools/cfgs/kitti_models/CMKD/cmkd_kitti_eigen_R50_scd_V2.yaml  --tcp_port 16677 --pretrained_lidar_model ../checkpoints/second_teacher.pth
 --pretrained_img_model ../output/kitti_models/CMKD/cmkd_kitti_eigen_R50_scd_bev/default/ckpt/checkpoint_epoch_30.pth
 ```
