@@ -84,8 +84,8 @@ def build_dataloader(dataset_cfg, class_names, batch_size, dist, root_path=None,
     # drop_last, shuffle
     dataloader = DataLoader(
         dataset, batch_size=batch_size, pin_memory=True, num_workers=workers,
-        # shuffle=(sampler is None) and training, 
-        shuffle= (sampler is None) and shuffle,
+        # shuffle=(sampler is None) and training,
+        shuffle= (sampler is None) and shuffle and training,
         collate_fn=dataset.collate_batch,
         drop_last=drop_last, sampler=sampler, timeout=0
     )
